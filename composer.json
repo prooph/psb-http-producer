@@ -1,0 +1,39 @@
+{
+    "name": "prooph/psb-http-dispatcher",
+    "description": "Http message dispatcher for PSB using guzzle",
+    "homepage": "https://github.com/prooph/psb-http-dispatcher",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Alexander Miertsch",
+            "email": "contact@prooph.de",
+            "homepage": "http://www.codeliner.ws"
+        }
+    ],
+    "keywords": [
+        "prooph",
+        "php",
+        "cqrs",
+        "messaging",
+        "guzzle",
+        "http"
+    ],
+    "require": {
+        "php": ">=5.4",
+        "guzzlehttp/guzzle": "~5.0"
+    },
+    "require-dev": {
+        "prooph/service-bus": "~1.3",
+        "phpunit/phpunit": "3.7.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Prooph\\ServiceBus\\Message\\Http\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-0": {
+            "Prooph\\ServiceBusTest\\": "vendor/prooph/service-bus/tests/"
+        }
+    }
+}
