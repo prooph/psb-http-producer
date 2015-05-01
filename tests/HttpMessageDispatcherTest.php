@@ -13,10 +13,9 @@ namespace Prooph\ServiceBusTest;
 use GuzzleHttp\Client;
 use GuzzleHttp\Ring\Client\MockHandler;
 use GuzzleHttp\Subscriber\History;
-use Prooph\ServiceBus\Message\FromMessageTranslator;
+use Prooph\Common\Messaging\RemoteMessage;
+use Prooph\ServiceBus\Message\FromRemoteMessageTranslator;
 use Prooph\ServiceBus\Message\Http\MessageDispatcher;
-use Prooph\ServiceBus\Message\StandardMessage;
-use Prooph\ServiceBus\Message\ToMessageTranslator;
 use Prooph\ServiceBusTest\Mock\DoSomething;
 
 /**
@@ -38,14 +37,9 @@ class HttpMessageDispatcherTest extends TestCase
     private $requestHistory;
 
     /**
-     * @var ToMessageTranslator
+     * @var FromRemoteMessageTranslator
      */
-    private $toMessageTranslator;
-
-    /**
-     * @var FromMessageTranslator
-     */
-    private $fromMessageTranslator;
+    private $fromRemoteMessageTranslator;
 
     protected function setUp()
     {
@@ -57,9 +51,7 @@ class HttpMessageDispatcherTest extends TestCase
 
         $this->guzzleClient->getEmitter()->attach($this->requestHistory);
 
-        $this->toMessageTranslator = new ToMessageTranslator();
-
-        $this->fromMessageTranslator = new FromMessageTranslator();
+        $this->fromRemoteMessageTranslator = new FromRemoteMessageTranslator();
     }
 
     /**
@@ -69,7 +61,7 @@ class HttpMessageDispatcherTest extends TestCase
     {
         $doSomething = DoSomething::fromData("test command");
 
-        $message = $this->toMessageTranslator->translateToMessage($doSomething);
+        $message = $doSomething->toRemoteMessage();
 
         $messageDispatcher = new MessageDispatcher($this->guzzleClient, '/test-api/messages');
 
@@ -81,7 +73,7 @@ class HttpMessageDispatcherTest extends TestCase
 
         $messageArr = json_decode($request->getBody(), true);
 
-        $doSomethingSend = $this->fromMessageTranslator->translateFromMessage(StandardMessage::fromArray($messageArr));
+        $doSomethingSend = $this->fromRemoteMessageTranslator->translateFromRemoteMessage(RemoteMessage::fromArray($messageArr));
 
         $this->assertEquals($doSomething->payload(), $doSomethingSend->payload());
 
@@ -95,7 +87,7 @@ class HttpMessageDispatcherTest extends TestCase
     {
         $doSomething = DoSomething::fromData("test command");
 
-        $message = $this->toMessageTranslator->translateToMessage($doSomething);
+        $message = $doSomething->toRemoteMessage();
 
         $messageDispatcher = new MessageDispatcher($this->guzzleClient);
 
@@ -107,7 +99,7 @@ class HttpMessageDispatcherTest extends TestCase
 
         $messageArr = json_decode($request->getBody(), true);
 
-        $doSomethingSend = $this->fromMessageTranslator->translateFromMessage(StandardMessage::fromArray($messageArr));
+        $doSomethingSend = $this->fromRemoteMessageTranslator->translateFromRemoteMessage(RemoteMessage::fromArray($messageArr));
 
         $this->assertEquals($doSomething->payload(), $doSomethingSend->payload());
 
@@ -125,7 +117,7 @@ class HttpMessageDispatcherTest extends TestCase
 
         $doSomething = DoSomething::fromData("test command");
 
-        $message = $this->toMessageTranslator->translateToMessage($doSomething);
+        $message = $doSomething->toRemoteMessage();
 
         $messageDispatcher = new MessageDispatcher($this->guzzleClient, null, true);
 

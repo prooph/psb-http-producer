@@ -11,8 +11,8 @@
 namespace Prooph\ServiceBus\Message\Http;
 
 use GuzzleHttp\Client;
-use Prooph\ServiceBus\Message\MessageDispatcherInterface;
-use Prooph\ServiceBus\Message\MessageInterface;
+use Prooph\Common\Messaging\RemoteMessage;
+use Prooph\ServiceBus\Message\RemoteMessageDispatcher;
 
 /**
  * Class MessageDispatcher
@@ -23,7 +23,7 @@ use Prooph\ServiceBus\Message\MessageInterface;
  * @package Prooph\ServiceBus\Message\Http
  * @author Alexander Miertsch <kontakt@codeliner.ws>
  */
-class MessageDispatcher implements MessageDispatcherInterface
+class MessageDispatcher implements RemoteMessageDispatcher
 {
     /**
      * @var Client
@@ -74,10 +74,10 @@ class MessageDispatcher implements MessageDispatcherInterface
     }
 
     /**
-     * @param MessageInterface $message
+     * @param RemoteMessage $message
      * @return void
      */
-    public function dispatch(MessageInterface $message)
+    public function dispatch(RemoteMessage $message)
     {
         $response = $this->guzzleClient->post($this->uri, ['json' => $message->toArray(), 'future' => $this->sendAsync]);
 
