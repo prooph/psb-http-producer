@@ -9,3 +9,11 @@ before_script:
   - composer install --dev --prefer-source
 
 script: phpunit
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/61c75218816eebde4486
+    on_success: change  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: never     # options: [always|never|change] default: always
