@@ -10,7 +10,7 @@
          syntaxCheck="false"
          bootstrap="vendor/autoload.php"
 >
-    <testsuite name="Prooph ServiceBus Http MessageDispatcher Test Suite">
+    <testsuite name="Prooph ServiceBus Http Message Producer Test Suite">
         <directory>./tests/</directory>
     </testsuite>
 

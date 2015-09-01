@@ -1,28 +1,39 @@
 Guzzle HTTP message dispatcher for ProophServiceBus
 ===================================================
 
-[![Build Status](https://travis-ci.org/prooph/psb-http-dispatcher.svg?branch=master)](https://travis-ci.org/prooph/psb-http-dispatcher)
+[![Build Status](https://travis-ci.org/prooph/psb-http-producer.svg?branch=master)](https://travis-ci.org/prooph/psb-http-producer)
+[![Coverage Status](https://img.shields.io/coveralls/prooph/psb-http-producer.svg)](https://coveralls.io/r/prooph/psb-http-producer?branch=master)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/prooph/improoph)
 
-Use [Guzzle](http://guzzlephp.org/) as message dispatcher for [ProophServiceBus](https://github.com/prooph/service-bus).
+Use [Guzzle](http://guzzlephp.org/) 6+ as message producer for [Prooph Service Bus](https://github.com/prooph/service-bus).
+Works together with all bus types: CommandBus, EventBus and QueryBus.
 
 # Installation
 
-You can install the dispatcher via composer by adding `"prooph/psb-http-dispatcher": "~0.1"` as requirement to your composer.json.
+You can install the producer via composer by adding `"prooph/psb-http-producer": "~0.4"` as requirement to your composer.json.
 
 Usage
 -----
 
-Pass a ready-to-use `GuzzleHttp\Client` to `Prooph\ServiceBus\Message\Http\MessageDispatcher` and you are done.
-The MessageDispatcher sends a POST request to `<URL>/api/messages` with the json encoded message as body.
-You should set the base url, host, port, etc. as default options for the guzzle client. If your http endpoint uses
-another resource than `/api/messages` you can override the default by passing the resource as second argument to
-`Prooph\ServiceBus\Message\Http\MessageDispatcher`. With the third argument of `Prooph\ServiceBus\Message\Http\MessageDispatcher`
-you can enable the future mode available since Guzzle 5.0+ (see [Guzzle docs](http://docs.guzzlephp.org/en/latest/clients.html#asynchronous-requests) for details)
+Pass a ready-to-use `GuzzleHttp\Client` to `Prooph\ServiceBus\Message\Http\HttpMessageProducer` together with a `Prooph\Common\Messaging\MessageConverter`.
+
+The HttpMessageProducer sends a POST request to `<URL>/api/messages` with the json encoded message as body.
+You should set the base url, host, port, etc. as default options for the guzzle client.
+
+If your http endpoint uses another resource than `/api/messages` you can override the default by passing the resource uri as third argument to
+`Prooph\ServiceBus\Message\Http\HttpMessageProducer`.
+
+With the fourth argument you can enable the async mode.
+This means that when the producer is used for querying remote services (QueryBus) the producer does not wait until the Guzzle\Promise gets resolved.
+Instead it attaches own handlers and resolves or rejects the QueryBus deferred when the Guzzle\Promise is resolved or rejected
+(see [Guzzle Promises docs](https://github.com/guzzle/promises/blob/master/README.md) for details about async promise handling)
 
 # Support
 
 - Ask questions on [prooph-users](https://groups.google.com/forum/?hl=de#!forum/prooph) google group.
-- File issues at [https://github.com/prooph/psb-http-dispatcher/issues](https://github.com/prooph/psb-http-dispatcher/issues).
+- File issues at [https://github.com/prooph/psb-http-producer/issues](https://github.com/prooph/psb-http-producer/issues).
+- Say hello in the [prooph gitter](https://gitter.im/prooph/improoph) chat.
+
 
 # Contribute
 
@@ -32,4 +43,4 @@ To establish a consistent code quality, please provide unit tests for all your c
 License
 -------
 
-Released under the [New BSD License](https://github.com/prooph/psb-http-dispatcher/blob/master/LICENSE).
+Released under the [New BSD License](LICENSE).
