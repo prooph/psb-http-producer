@@ -1,7 +1,7 @@
 {
-    "name": "prooph/psb-http-dispatcher",
-    "description": "Http message dispatcher for PSB using guzzle",
-    "homepage": "https://github.com/prooph/psb-http-dispatcher",
+    "name": "prooph/psb-http-producer",
+    "description": "Http Message Producer for Prooph Service Bus using guzzle",
+    "homepage": "https://github.com/prooph/psb-http-producer",
     "license": "BSD-3-Clause",
     "authors": [
         {
@@ -16,19 +16,20 @@
     ],
     "keywords": [
         "prooph",
-        "php",
-        "cqrs",
+        "CQRS",
         "messaging",
         "guzzle",
         "http"
     ],
     "require": {
         "php": ">=5.5",
-        "guzzlehttp/guzzle": "~5.0"
+        "guzzlehttp/guzzle": "^6.0"
     },
     "require-dev": {
         "prooph/service-bus": "dev-master",
-        "phpunit/phpunit": "3.7.*"
+        "phpunit/phpunit": "~4.7",
+        "fabpot/php-cs-fixer": "1.7.*",
+        "satooshi/php-coveralls": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -36,7 +37,7 @@
         }
     },
     "autoload-dev": {
-        "psr-0": {
+        "psr-4": {
             "Prooph\\ServiceBusTest\\": "vendor/prooph/service-bus/tests/"
         }
     }
