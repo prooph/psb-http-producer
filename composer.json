@@ -1,7 +1,7 @@
 {
     "name": "prooph/psb-http-producer",
     "description": "Http Message Producer for Prooph Service Bus using guzzle",
-    "homepage": "https://github.com/prooph/psb-http-producer",
+    "homepage": "http://getprooph.org/",
     "license": "BSD-3-Clause",
     "authors": [
         {
