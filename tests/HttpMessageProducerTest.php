@@ -8,7 +8,7 @@
  *
  * Date: 10/31/14 - 09:57 PM
  */
-namespace Prooph\ServiceBusTest;
+namespace ProophTest\ServiceBus;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -16,8 +16,8 @@ use GuzzleHttp\Promise\Promise;
 use Prooph\Common\Messaging\NoOpMessageConverter;
 use Prooph\ServiceBus\Exception\RuntimeException;
 use Prooph\ServiceBus\Message\Http\HttpMessageProducer;
-use Prooph\ServiceBusTest\Mock\DoSomething;
-use Prooph\ServiceBusTest\Mock\FetchSomething;
+use ProophTest\ServiceBus\Mock\DoSomething;
+use ProophTest\ServiceBus\Mock\FetchSomething;
 use Psr\Http\Message\ResponseInterface;
 use React\Promise\Deferred;
 
