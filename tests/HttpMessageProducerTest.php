@@ -1,18 +1,20 @@
 <?php
-/*
+
+declare(strict_types=1);
+/**
  * This file is part of the prooph/psb-http-producer.
- * (c) 2014 - 2015 prooph software GmbH <contact@prooph.de>
+ * (c) 2014-2017 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * Date: 10/31/14 - 09:57 PM
  */
 namespace ProophTest\ServiceBus;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Promise\Promise;
+use PHPUnit\Framework\TestCase;
 use Prooph\Common\Messaging\NoOpMessageConverter;
 use Prooph\ServiceBus\Exception\RuntimeException;
 use Prooph\ServiceBus\Message\Http\HttpMessageProducer;
@@ -67,7 +69,7 @@ class HttpMessageProducerTest extends TestCase
      */
     public function it_sends_message_as_a_http_post_request_to_specified_uri()
     {
-        $doSomething = new DoSomething(["data" => "test command"]);
+        $doSomething = new DoSomething(['data' => 'test command']);
 
         $messageProducer = $this->httpMessageProducer;
 
@@ -94,7 +96,7 @@ class HttpMessageProducerTest extends TestCase
      */
     public function it_uses_default_uri_when_non_is_specified()
     {
-        $doSomething = new DoSomething(["data" => "test command"]);
+        $doSomething = new DoSomething(['data' => 'test command']);
 
         $messageProducer = $this->httpMessageProducer;
 
