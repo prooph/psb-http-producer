@@ -81,7 +81,7 @@ class HttpMessageProducerTest extends TestCase
 
         $request = $this->mockHandler->getLastRequest();
 
-        $messageArr = json_decode((string)$request->getBody(), true);
+        $messageArr = json_decode((string) $request->getBody(), true);
 
         $doSomethingArr = $doSomething->toArray();
         $doSomethingArr['created_at'] = $doSomething->createdAt()->format('Y-m-d\TH:i:s.u');
@@ -106,7 +106,7 @@ class HttpMessageProducerTest extends TestCase
 
         $request = $this->mockHandler->getLastRequest();
 
-        $messageArr = json_decode((string)$request->getBody(), true);
+        $messageArr = json_decode((string) $request->getBody(), true);
 
         $doSomethingArr = $doSomething->toArray();
         $doSomethingArr['created_at'] = $doSomething->createdAt()->format('Y-m-d\TH:i:s.u');
