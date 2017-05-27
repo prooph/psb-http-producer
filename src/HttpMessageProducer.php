@@ -1,17 +1,17 @@
 <?php
-/*
+
+declare(strict_types=1);
+/**
  * This file is part of the prooph/psb-http-producer.
- * (c) 2014 - 2015 prooph software GmbH <contact@prooph.de>
+ * (c) 2014-2017 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * Date: 10/31/14 - 09:57 PM
  */
 namespace Prooph\ServiceBus\Message\Http;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Promise\PromiseInterface;
 use Prooph\Common\Messaging\Message;
 use Prooph\Common\Messaging\MessageConverter;
@@ -46,7 +46,7 @@ class HttpMessageProducer implements MessageProducer
     /**
      * @var string
      */
-    private $uri = "/api/messages";
+    private $uri = '/api/messages';
 
     /**
      * @var bool
@@ -59,7 +59,7 @@ class HttpMessageProducer implements MessageProducer
      * @param null|string $uri
      * @param bool $async
      */
-    public function __construct(Client $guzzleClient, MessageConverter $messageConverter, $uri = null, $async = false)
+    public function __construct(Client $guzzleClient, MessageConverter $messageConverter, string $uri = null, bool $async = false)
     {
         if (null !== $uri) {
             $this->useUri($uri);
@@ -71,9 +71,9 @@ class HttpMessageProducer implements MessageProducer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function __invoke(Message $message, Deferred $deferred = null)
+    public function __invoke(Message $message, Deferred $deferred = null): void
     {
         $messageData = $this->messageConverter->convertToArray($message);
 
@@ -96,14 +96,14 @@ class HttpMessageProducer implements MessageProducer
      * @param string $uri starting with a slash
      * @throws InvalidArgumentException if $uri is not a string or if it does not start with a slash
      */
-    public function useUri($uri)
+    public function useUri(string $uri): void
     {
-        if (! is_string($uri) || $uri === '') {
-            throw new InvalidArgumentException("Uri must be a non empty string");
+        if ($uri === '') {
+            throw new InvalidArgumentException('Uri must be a non empty string');
         }
 
         if ($uri[0] !== '/') {
-            throw new InvalidArgumentException("Wrong URI provided: " . $uri . ". It must start with a slash!");
+            throw new InvalidArgumentException('Wrong URI provided: ' . $uri . '. It must start with a slash!');
         }
 
         $this->uri = $uri;
@@ -138,7 +138,7 @@ class HttpMessageProducer implements MessageProducer
      * @param Deferred $deferred
      * @param PromiseInterface $promise
      */
-    private function resolveOrRejectDeferredSync(Deferred $deferred, PromiseInterface $promise)
+    private function resolveOrRejectDeferredSync(Deferred $deferred, PromiseInterface $promise): void
     {
         try {
             $response = $promise->wait();
@@ -165,7 +165,7 @@ class HttpMessageProducer implements MessageProducer
      * @param Deferred $deferred
      * @param PromiseInterface $promise
      */
-    private function resolveOrRejectDeferredAsync(Deferred $deferred, PromiseInterface $promise)
+    private function resolveOrRejectDeferredAsync(Deferred $deferred, PromiseInterface $promise): void
     {
         $promise->then(
             function (ResponseInterface $response) use ($deferred) {
