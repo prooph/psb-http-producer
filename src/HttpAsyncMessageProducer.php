@@ -12,39 +12,47 @@ declare(strict_types=1);
 
 namespace Prooph\ServiceBus\Message\Http;
 
-use Http\Client\HttpClient;
+use Http\Client\HttpAsyncClient;
 use Http\Message\RequestFactory;
 use Prooph\Common\Messaging\MessageConverter;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 use React\Promise\Deferred;
 
-final class HttpMessageProducer extends AbstractHttpMessageProducer
+final class HttpAsyncMessageProducer extends AbstractHttpMessageProducer
 {
     /**
-     * @var HttpClient
+     * @var HttpAsyncClient
      */
-    private $httpClient;
+    private $httpAsyncClient;
 
     public function __construct(
-        HttpClient $httpClient,
+        HttpAsyncClient $httpAsyncClient,
         MessageConverter $messageConverter,
         UriInterface $uri,
         RequestFactory $requestFactory = null
     ) {
-        $this->httpClient = $httpClient;
+        $this->httpAsyncClient = $httpAsyncClient;
         parent::__construct($messageConverter, $uri, $requestFactory);
     }
 
     protected function handleRequest(RequestInterface $request, Deferred $deferred): void
     {
-        $response = $this->httpClient->sendRequest($request);
+        $promise = $this->httpAsyncClient->sendAsyncRequest($request);
 
-        try {
-            $payload = $this->getPayloadFromResponse($response);
-            $deferred->resolve($payload);
-        } catch (\Throwable $exception) {
-            $deferred->reject($exception);
-        }
+        $promise->then(
+            function (ResponseInterface $response) use ($deferred) {
+                try {
+                    $payload = $this->getPayloadFromResponse($response);
+                    $deferred->resolve($payload);
+                } catch (\Throwable $exception) {
+                    $deferred->reject($exception);
+                }
+            },
+            function ($reason) use ($deferred) {
+                $deferred->reject($reason);
+            }
+        );
     }
 }
