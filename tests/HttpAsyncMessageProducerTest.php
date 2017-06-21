@@ -12,13 +12,15 @@ declare(strict_types=1);
 
 namespace ProophTest\ServiceBus;
 
-use Http\Client\HttpClient;
+use Http\Client\HttpAsyncClient;
 use Http\Message\RequestFactory;
+use Http\Promise\FulfilledPromise;
+use Http\Promise\RejectedPromise;
 use PHPUnit\Framework\TestCase;
 use Prooph\Common\Messaging\MessageDataAssertion;
 use Prooph\Common\Messaging\NoOpMessageConverter;
 use Prooph\ServiceBus\Exception\RuntimeException;
-use Prooph\ServiceBus\Message\Http\HttpMessageProducer;
+use Prooph\ServiceBus\Message\Http\HttpAsyncMessageProducer;
 use ProophTest\ServiceBus\Mock\DoSomething;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\RequestInterface;
@@ -26,7 +28,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 use React\Promise\Deferred;
 
-class HttpMessageProducerTest extends TestCase
+class HttpAsyncMessageProducerTest extends TestCase
 {
     /**
      * @var ObjectProphecy
@@ -85,7 +87,7 @@ class HttpMessageProducerTest extends TestCase
             ->willReturn($this->request)
             ->shouldBeCalled();
 
-        $this->httpClient = $this->prophesize(HttpClient::class);
+        $this->httpClient = $this->prophesize(HttpAsyncClient::class);
     }
 
     /**
@@ -96,9 +98,11 @@ class HttpMessageProducerTest extends TestCase
         $response = $this->prophesize(ResponseInterface::class);
         $response->getBody()->willReturn(json_encode(['all' => 'good']))->shouldBeCalled();
 
-        $this->httpClient->sendRequest($this->request)->willReturn($response)->shouldBeCalled();
+        $promise = new FulfilledPromise($response->reveal());
 
-        $messageProducer = new HttpMessageProducer(
+        $this->httpClient->sendAsyncRequest($this->request)->willReturn($promise)->shouldBeCalled();
+
+        $messageProducer = new HttpAsyncMessageProducer(
             $this->httpClient->reveal(),
             $this->messageConverter,
             $this->uri,
@@ -123,12 +127,44 @@ class HttpMessageProducerTest extends TestCase
      */
     public function it_rejects_deferred_with_exception()
     {
+        $promise = new RejectedPromise(new RuntimeException('Invalid JSON Response.'));
+
+        $this->httpClient->sendAsyncRequest($this->request)->willReturn($promise)->shouldBeCalled();
+
+        $messageProducer = new HttpAsyncMessageProducer(
+            $this->httpClient->reveal(),
+            $this->messageConverter,
+            $this->uri,
+            $this->requestFactory->reveal()
+        );
+
+        $deferred = new Deferred();
+        $messageProducer($this->testCommand, $deferred);
+
+        $deferred->promise()->done(
+            function ($result): void {
+                $this->fail('Promise fulfilled');
+            },
+            function ($error): void {
+                $this->assertInstanceOf(RuntimeException::class, $error);
+                $this->assertSame('Invalid JSON Response.', $error->getMessage());
+            }
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_rejects_deferred_with_invalid_response()
+    {
         $response = $this->prophesize(ResponseInterface::class);
         $response->getBody()->willReturn('invalid')->shouldBeCalled();
 
-        $this->httpClient->sendRequest($this->request)->willReturn($response)->shouldBeCalled();
+        $promise = new FulfilledPromise($response->reveal());
 
-        $messageProducer = new HttpMessageProducer(
+        $this->httpClient->sendAsyncRequest($this->request)->willReturn($promise)->shouldBeCalled();
+
+        $messageProducer = new HttpAsyncMessageProducer(
             $this->httpClient->reveal(),
             $this->messageConverter,
             $this->uri,
