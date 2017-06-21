@@ -66,7 +66,7 @@ abstract class AbstractHttpMessageProducer implements MessageProducer
             'POST',
             $this->uri,
             [
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/json',
             ],
             json_encode($messageData)
         );
