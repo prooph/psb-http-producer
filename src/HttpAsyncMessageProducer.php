@@ -20,6 +20,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 use React\Promise\Deferred;
+use Throwable;
 
 final class HttpAsyncMessageProducer extends AbstractHttpMessageProducer
 {
@@ -42,8 +43,18 @@ final class HttpAsyncMessageProducer extends AbstractHttpMessageProducer
     {
         $promise = $this->httpAsyncClient->sendAsyncRequest($request);
 
+        $exception = null;
+
         $promise->then(
-            function (ResponseInterface $response) use ($deferred) {
+            function (ResponseInterface $response) use ($deferred, &$exception) {
+                if ('2' !== substr((string) $response->getStatusCode(), 0, 1)) {
+                    if ($deferred) {
+                        $deferred->reject($response->getReasonPhrase());
+                    } else {
+                        $exception = new RuntimeException($response->getReasonPhrase());
+                    }
+                }
+
                 if ($deferred) {
                     try {
                         $payload = $this->getPayloadFromResponse($response);
@@ -53,12 +64,21 @@ final class HttpAsyncMessageProducer extends AbstractHttpMessageProducer
                     }
                 }
             },
-            function ($reason) use ($deferred) {
+            function (Throwable $reason) use ($deferred) {
                 if (null === $deferred) {
-                    throw new RuntimeException($reason);
+                    throw new RuntimeException($reason->getMessage());
                 }
                 $deferred->reject($reason);
             }
         );
+
+        if (null === $deferred) {
+            $promise->wait();
+
+            if ($exception) {
+                /* @var Throwable $exception */
+                throw $exception;
+            }
+        }
     }
 }

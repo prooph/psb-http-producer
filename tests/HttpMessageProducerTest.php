@@ -121,7 +121,7 @@ class HttpMessageProducerTest extends TestCase
     /**
      * @test
      */
-    public function it_sends_message_as_a_http_post_request_to_specified_uri()
+    public function it_sends_message_as_a_http_post_request_to_specified_uri(): void
     {
         $this->prepareQueryRequest();
 
@@ -153,7 +153,7 @@ class HttpMessageProducerTest extends TestCase
     /**
      * @test
      */
-    public function it_rejects_deferred_with_exception()
+    public function it_rejects_deferred_with_exception(): void
     {
         $this->prepareQueryRequest();
 
@@ -181,5 +181,75 @@ class HttpMessageProducerTest extends TestCase
                 $this->assertSame('Invalid JSON Response.', $error->getMessage());
             }
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_works_also_with_commands(): void
+    {
+        $this->prepareCommandRequest();
+
+        $response = $this->prophesize(ResponseInterface::class);
+        $response->getBody()->shouldNotBeCalled();
+        $response->getStatusCode()->willReturn(202)->shouldBeCalled();
+
+        $this->httpClient->sendRequest($this->request)->willReturn($response)->shouldBeCalled();
+
+        $messageProducer = new HttpMessageProducer(
+            $this->httpClient->reveal(),
+            $this->messageConverter,
+            $this->uri,
+            $this->requestFactory->reveal()
+        );
+
+        $messageProducer($this->testCommand);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_using_commands_when_non_200_status_code_returned(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('some error');
+
+        $this->prepareCommandRequest();
+
+        $response = $this->prophesize(ResponseInterface::class);
+        $response->getBody()->shouldNotBeCalled();
+        $response->getStatusCode()->willReturn(404)->shouldBeCalled();
+        $response->getReasonPhrase()->willReturn('some error')->shouldBeCalled();
+
+        $this->httpClient->sendRequest($this->request)->willReturn($response)->shouldBeCalled();
+
+        $messageProducer = new HttpMessageProducer(
+            $this->httpClient->reveal(),
+            $this->messageConverter,
+            $this->uri,
+            $this->requestFactory->reveal()
+        );
+
+        $messageProducer($this->testCommand);
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_deferred_missing_for_query(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Deferred expected for queries');
+
+        $this->requestFactory = $this->prophesize(RequestFactory::class);
+
+        $messageProducer = new HttpMessageProducer(
+            $this->httpClient->reveal(),
+            $this->messageConverter,
+            $this->uri,
+            $this->requestFactory->reveal()
+        );
+
+        $messageProducer($this->testQuery);
     }
 }
