@@ -41,6 +41,7 @@ final class HttpMessageProducer extends AbstractHttpMessageProducer
     {
         $response = $this->httpClient->sendRequest($request);
 
+        // we accept only status code 2xx
         if (null === $deferred && '2' !== substr((string) $response->getStatusCode(), 0, 1)) {
             throw new RuntimeException($response->getReasonPhrase());
         }

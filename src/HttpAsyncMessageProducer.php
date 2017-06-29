@@ -47,6 +47,7 @@ final class HttpAsyncMessageProducer extends AbstractHttpMessageProducer
 
         $promise->then(
             function (ResponseInterface $response) use ($deferred, &$exception) {
+                // we accept only status code 2xx
                 if ('2' !== substr((string) $response->getStatusCode(), 0, 1)) {
                     if ($deferred) {
                         $deferred->reject($response->getReasonPhrase());
