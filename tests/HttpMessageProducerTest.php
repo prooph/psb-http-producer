@@ -20,6 +20,7 @@ use Prooph\Common\Messaging\NoOpMessageConverter;
 use Prooph\ServiceBus\Exception\RuntimeException;
 use Prooph\ServiceBus\Message\Http\HttpMessageProducer;
 use ProophTest\ServiceBus\Mock\DoSomething;
+use ProophTest\ServiceBus\Mock\FetchSomething;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -58,19 +59,30 @@ class HttpMessageProducerTest extends TestCase
      */
     private $testCommand;
 
+    /**
+     * @var FetchSomething
+     */
+    private $testQuery;
+
     protected function setUp()
     {
         $this->messageConverter = new NoOpMessageConverter();
         $this->uri = $this->prophesize(UriInterface::class);
         $this->uri = $this->uri->reveal();
         $this->testCommand = new DoSomething(['data' => 'test command']);
-
-        $messageData = $this->messageConverter->convertToArray($this->testCommand);
-        MessageDataAssertion::assert($messageData);
-        $messageData['created_at'] = $this->testCommand->createdAt()->format('Y-m-d\TH:i:s.u');
+        $this->testQuery = new FetchSomething(['some' => 'question']);
 
         $this->request = $this->prophesize(RequestInterface::class);
         $this->request = $this->request->reveal();
+
+        $this->httpClient = $this->prophesize(HttpClient::class);
+    }
+
+    private function prepareQueryRequest(): void
+    {
+        $messageData = $this->messageConverter->convertToArray($this->testQuery);
+        MessageDataAssertion::assert($messageData);
+        $messageData['created_at'] = $this->testQuery->createdAt()->format('Y-m-d\TH:i:s.u');
 
         $this->requestFactory = $this->prophesize(RequestFactory::class);
         $this->requestFactory
@@ -84,8 +96,26 @@ class HttpMessageProducerTest extends TestCase
             )
             ->willReturn($this->request)
             ->shouldBeCalled();
+    }
 
-        $this->httpClient = $this->prophesize(HttpClient::class);
+    private function prepareCommandRequest(): void
+    {
+        $messageData = $this->messageConverter->convertToArray($this->testCommand);
+        MessageDataAssertion::assert($messageData);
+        $messageData['created_at'] = $this->testCommand->createdAt()->format('Y-m-d\TH:i:s.u');
+
+        $this->requestFactory = $this->prophesize(RequestFactory::class);
+        $this->requestFactory
+            ->createRequest(
+                'POST',
+                $this->uri,
+                [
+                    'Content-Type' => 'application/json',
+                ],
+                json_encode($messageData)
+            )
+            ->willReturn($this->request)
+            ->shouldBeCalled();
     }
 
     /**
@@ -93,8 +123,10 @@ class HttpMessageProducerTest extends TestCase
      */
     public function it_sends_message_as_a_http_post_request_to_specified_uri()
     {
+        $this->prepareQueryRequest();
+
         $response = $this->prophesize(ResponseInterface::class);
-        $response->getBody()->willReturn(json_encode(['all' => 'good']))->shouldBeCalled();
+        $response->getBody()->willReturn(json_encode(['here\'s' => 'something']))->shouldBeCalled();
 
         $this->httpClient->sendRequest($this->request)->willReturn($response)->shouldBeCalled();
 
@@ -106,11 +138,11 @@ class HttpMessageProducerTest extends TestCase
         );
 
         $deferred = new Deferred();
-        $messageProducer($this->testCommand, $deferred);
+        $messageProducer($this->testQuery, $deferred);
 
         $deferred->promise()->done(
             function ($result): void {
-                $this->assertSame(['all' => 'good'], $result);
+                $this->assertSame(['here\'s' => 'something'], $result);
             },
             function ($error): void {
                 $this->fail('Promise rejected');
@@ -123,6 +155,8 @@ class HttpMessageProducerTest extends TestCase
      */
     public function it_rejects_deferred_with_exception()
     {
+        $this->prepareQueryRequest();
+
         $response = $this->prophesize(ResponseInterface::class);
         $response->getBody()->willReturn('invalid')->shouldBeCalled();
 
@@ -136,7 +170,7 @@ class HttpMessageProducerTest extends TestCase
         );
 
         $deferred = new Deferred();
-        $messageProducer($this->testCommand, $deferred);
+        $messageProducer($this->testQuery, $deferred);
 
         $deferred->promise()->done(
             function ($result): void {

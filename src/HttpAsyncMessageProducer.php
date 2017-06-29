@@ -15,6 +15,7 @@ namespace Prooph\ServiceBus\Message\Http;
 use Http\Client\HttpAsyncClient;
 use Http\Message\RequestFactory;
 use Prooph\Common\Messaging\MessageConverter;
+use Prooph\ServiceBus\Exception\RuntimeException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -37,20 +38,25 @@ final class HttpAsyncMessageProducer extends AbstractHttpMessageProducer
         parent::__construct($messageConverter, $uri, $requestFactory);
     }
 
-    protected function handleRequest(RequestInterface $request, Deferred $deferred): void
+    protected function handleRequest(RequestInterface $request, Deferred $deferred = null): void
     {
         $promise = $this->httpAsyncClient->sendAsyncRequest($request);
 
         $promise->then(
             function (ResponseInterface $response) use ($deferred) {
-                try {
-                    $payload = $this->getPayloadFromResponse($response);
-                    $deferred->resolve($payload);
-                } catch (\Throwable $exception) {
-                    $deferred->reject($exception);
+                if ($deferred) {
+                    try {
+                        $payload = $this->getPayloadFromResponse($response);
+                        $deferred->resolve($payload);
+                    } catch (\Throwable $exception) {
+                        $deferred->reject($exception);
+                    }
                 }
             },
             function ($reason) use ($deferred) {
+                if (null === $deferred) {
+                    throw new RuntimeException($reason);
+                }
                 $deferred->reject($reason);
             }
         );
