@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace ProophTest\ServiceBus;
+namespace ProophTest\ServiceBus\Message\Http;
 
 use Http\Client\HttpAsyncClient;
 use Http\Message\RequestFactory;
