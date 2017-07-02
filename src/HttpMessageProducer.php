@@ -15,9 +15,11 @@ namespace Prooph\ServiceBus\Message\Http;
 use Http\Client\HttpClient;
 use Http\Message\RequestFactory;
 use Prooph\Common\Messaging\MessageConverter;
+use Prooph\ServiceBus\Message\Http\Exception\RuntimeException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 use React\Promise\Deferred;
+use Throwable;
 
 final class HttpMessageProducer extends AbstractHttpMessageProducer
 {
@@ -36,15 +38,22 @@ final class HttpMessageProducer extends AbstractHttpMessageProducer
         parent::__construct($messageConverter, $uri, $requestFactory);
     }
 
-    protected function handleRequest(RequestInterface $request, Deferred $deferred): void
+    protected function handleRequest(RequestInterface $request, Deferred $deferred = null): void
     {
         $response = $this->httpClient->sendRequest($request);
 
-        try {
-            $payload = $this->getPayloadFromResponse($response);
-            $deferred->resolve($payload);
-        } catch (\Throwable $exception) {
-            $deferred->reject($exception);
+        // we accept only status code 2xx
+        if (null === $deferred && '2' !== substr((string) $response->getStatusCode(), 0, 1)) {
+            throw RuntimeException::fromResponse($response);
+        }
+
+        if ($deferred) {
+            try {
+                $payload = $this->getPayloadFromResponse($response);
+                $deferred->resolve($payload);
+            } catch (Throwable $exception) {
+                $deferred->reject($exception);
+            }
         }
     }
 }

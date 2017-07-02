@@ -56,6 +56,12 @@ abstract class AbstractHttpMessageProducer implements MessageProducer
      */
     public function __invoke(Message $message, Deferred $deferred = null): void
     {
+        if ($message->messageType() === Message::TYPE_QUERY && null === $deferred) {
+            throw new RuntimeException('Deferred expected for queries');
+        } elseif ($message->messageType() !== Message::TYPE_QUERY) {
+            $deferred = null;
+        }
+
         $messageData = $this->messageConverter->convertToArray($message);
 
         MessageDataAssertion::assert($messageData);

@@ -37,7 +37,13 @@
         "phpspec/prophecy": "^1.7",
         "satooshi/php-coveralls": "^1.0",
         "malukenho/docheader": "^0.1.4",
-        "react/promise": "^2.5"
+        "react/promise": "^2.5",
+        "sandrokeil/interop-config": "^2.0.1",
+        "psr/container": "^1.0"
+    },
+    "suggest": {
+        "psr/container": "^1.0 for usage of provided factories",
+        "sandrokeil/interop-config": "For usage of provided factories"
     },
     "autoload": {
         "psr-4": {
@@ -46,6 +52,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "ProophTest\\ServiceBus\\Message\\Http\\": "tests/",
             "ProophTest\\ServiceBus\\": "vendor/prooph/service-bus/tests/"
         }
     },
