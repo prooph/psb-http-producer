@@ -1,7 +1,15 @@
 # Change Log
 
-## [v1.0.0](https://github.com/prooph/psb-http-producer/tree/v1.0.0)
+## [v1.1.0](https://github.com/prooph/psb-http-producer/tree/v1.1.0)
 
+[Full Changelog](https://github.com/prooph/psb-http-producer/compare/v1.0.0...v1.1.0)
+
+**Fixed bugs:**
+
+- Deferred can be null [\#10](https://github.com/prooph/psb-http-producer/issues/10)
+- Deferred can be null + add container factories [\#11](https://github.com/prooph/psb-http-producer/pull/11) ([prolic](https://github.com/prolic))
+
+## [v1.0.0](https://github.com/prooph/psb-http-producer/tree/v1.0.0) (2017-06-21)
 [Full Changelog](https://github.com/prooph/psb-http-producer/compare/v0.4.0...v1.0.0)
 
 **Implemented enhancements:**
