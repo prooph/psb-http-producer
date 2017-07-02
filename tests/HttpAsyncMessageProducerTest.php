@@ -241,7 +241,7 @@ class HttpAsyncMessageProducerTest extends TestCase
                 $this->fail('Promise fulfilled');
             },
             function ($reason): void {
-                $this->assertSame('some error', $reason);
+                $this->assertSame('some error', $reason->response()->getReasonPhrase());
             }
         );
     }

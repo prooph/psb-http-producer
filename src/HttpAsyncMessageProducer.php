@@ -15,7 +15,7 @@ namespace Prooph\ServiceBus\Message\Http;
 use Http\Client\HttpAsyncClient;
 use Http\Message\RequestFactory;
 use Prooph\Common\Messaging\MessageConverter;
-use Prooph\ServiceBus\Exception\RuntimeException;
+use Prooph\ServiceBus\Message\Http\Exception\RuntimeException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -50,9 +50,9 @@ final class HttpAsyncMessageProducer extends AbstractHttpMessageProducer
                 // we accept only status code 2xx
                 if ('2' !== substr((string) $response->getStatusCode(), 0, 1)) {
                     if ($deferred) {
-                        $deferred->reject($response->getReasonPhrase());
+                        $deferred->reject(RuntimeException::fromResponse($response));
                     } else {
-                        $exception = new RuntimeException($response->getReasonPhrase());
+                        $exception = RuntimeException::fromResponse($response);
                     }
                 }
 
@@ -67,7 +67,7 @@ final class HttpAsyncMessageProducer extends AbstractHttpMessageProducer
             },
             function (Throwable $reason) use ($deferred) {
                 if (null === $deferred) {
-                    throw new RuntimeException($reason->getMessage());
+                    throw $reason;
                 }
                 $deferred->reject($reason);
             }
