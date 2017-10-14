@@ -27,7 +27,7 @@ For an overview of all ready-to-use http client implementations, check the offic
 
 # Support
 
-- Ask questions on [prooph-users](https://groups.google.com/forum/?hl=de#!forum/prooph) google group.
+- Ask questions on Stack Overflow tagged with [#prooph](https://stackoverflow.com/questions/tagged/prooph).
 - File issues at [https://github.com/prooph/psb-http-producer/issues](https://github.com/prooph/psb-http-producer/issues).
 - Say hello in the [prooph gitter](https://gitter.im/prooph/improoph) chat.
 
