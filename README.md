@@ -8,6 +8,12 @@ Guzzle HTTP message dispatcher for ProophServiceBus
 Use [php-http/httplug](http://httplug.io/) as message producer for [Prooph Service Bus](https://github.com/prooph/service-bus).
 Works together with all bus types: CommandBus, EventBus and QueryBus.
 
+## Important
+
+This library will receive support until December 31, 2019 and will then be deprecated.
+
+For further information see the official announcement here: [https://www.sasaprolic.com/2018/08/the-future-of-prooph-components.html](https://www.sasaprolic.com/2018/08/the-future-of-prooph-components.html)
+
 # Installation
 
 You can install the producer via composer by adding `"prooph/psb-http-producer": "^1.0"` as requirement to your composer.json.
