@@ -1,8 +1,9 @@
 <?php
+
 /**
  * This file is part of the prooph/psb-http-producer.
- * (c) 2014-2017 prooph software GmbH <contact@prooph.de>
- * (c) 2015-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * (c) 2014-2018 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -74,7 +75,7 @@ abstract class AbstractHttpMessageProducer implements MessageProducer
             [
                 'Content-Type' => 'application/json',
             ],
-            json_encode($messageData)
+            \json_encode($messageData)
         );
 
         $this->handleRequest($request, $deferred);
@@ -87,9 +88,9 @@ abstract class AbstractHttpMessageProducer implements MessageProducer
      */
     protected function getPayloadFromResponse(ResponseInterface $response)
     {
-        $payload = json_decode($response->getBody(), true);
+        $payload = \json_decode($response->getBody(), true);
 
-        switch (json_last_error()) {
+        switch (\json_last_error()) {
             case JSON_ERROR_DEPTH:
                 throw new RuntimeException('Invalid JSON Response, maximum stack depth exceeded.');
             case JSON_ERROR_UTF8:

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * This file is part of the prooph/psb-http-producer.
- * (c) 2014-2017 prooph software GmbH <contact@prooph.de>
- * (c) 2015-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * (c) 2014-2018 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -43,7 +44,7 @@ final class HttpMessageProducer extends AbstractHttpMessageProducer
         $response = $this->httpClient->sendRequest($request);
 
         // we accept only status code 2xx
-        if (null === $deferred && '2' !== substr((string) $response->getStatusCode(), 0, 1)) {
+        if (null === $deferred && '2' !== \substr((string) $response->getStatusCode(), 0, 1)) {
             throw RuntimeException::fromResponse($response);
         }
 

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * This file is part of the prooph/psb-http-producer.
- * (c) 2014-2017 prooph software GmbH <contact@prooph.de>
- * (c) 2015-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * (c) 2014-2018 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -92,7 +93,7 @@ class HttpMessageProducerTest extends TestCase
                 [
                     'Content-Type' => 'application/json',
                 ],
-                json_encode($messageData)
+                \json_encode($messageData)
             )
             ->willReturn($this->request)
             ->shouldBeCalled();
@@ -112,7 +113,7 @@ class HttpMessageProducerTest extends TestCase
                 [
                     'Content-Type' => 'application/json',
                 ],
-                json_encode($messageData)
+                \json_encode($messageData)
             )
             ->willReturn($this->request)
             ->shouldBeCalled();
@@ -126,7 +127,7 @@ class HttpMessageProducerTest extends TestCase
         $this->prepareQueryRequest();
 
         $response = $this->prophesize(ResponseInterface::class);
-        $response->getBody()->willReturn(json_encode(['here\'s' => 'something']))->shouldBeCalled();
+        $response->getBody()->willReturn(\json_encode(['here\'s' => 'something']))->shouldBeCalled();
 
         $this->httpClient->sendRequest($this->request)->willReturn($response)->shouldBeCalled();
 
