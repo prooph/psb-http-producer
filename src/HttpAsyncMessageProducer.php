@@ -1,8 +1,9 @@
 <?php
+
 /**
- * This file is part of the prooph/psb-http-producer.
- * (c) 2014-2017 prooph software GmbH <contact@prooph.de>
- * (c) 2015-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * This file is part of prooph/psb-http-producer.
+ * (c) 2014-2018 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -48,7 +49,7 @@ final class HttpAsyncMessageProducer extends AbstractHttpMessageProducer
         $promise->then(
             function (ResponseInterface $response) use ($deferred, &$exception) {
                 // we accept only status code 2xx
-                if ('2' !== substr((string) $response->getStatusCode(), 0, 1)) {
+                if ('2' !== \substr((string) $response->getStatusCode(), 0, 1)) {
                     if ($deferred) {
                         $deferred->reject(RuntimeException::fromResponse($response));
                     } else {

@@ -1,8 +1,9 @@
 <?php
+
 /**
- * This file is part of the prooph/psb-http-producer.
- * (c) 2014-2017 prooph software GmbH <contact@prooph.de>
- * (c) 2015-2017 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
+ * This file is part of prooph/psb-http-producer.
+ * (c) 2014-2018 prooph software GmbH <contact@prooph.de>
+ * (c) 2015-2018 Sascha-Oliver Prolic <saschaprolic@googlemail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -94,7 +95,7 @@ class HttpAsyncMessageProducerTest extends TestCase
                 [
                     'Content-Type' => 'application/json',
                 ],
-                json_encode($messageData)
+                \json_encode($messageData)
             )
             ->willReturn($this->request)
             ->shouldBeCalled();
@@ -114,7 +115,7 @@ class HttpAsyncMessageProducerTest extends TestCase
                 [
                     'Content-Type' => 'application/json',
                 ],
-                json_encode($messageData)
+                \json_encode($messageData)
             )
             ->willReturn($this->request)
             ->shouldBeCalled();
@@ -129,7 +130,7 @@ class HttpAsyncMessageProducerTest extends TestCase
 
         $response = $this->prophesize(ResponseInterface::class);
         $response->getStatusCode()->willReturn(200)->shouldBeCalled();
-        $response->getBody()->willReturn(json_encode(['here\'s' => 'something']))->shouldBeCalled();
+        $response->getBody()->willReturn(\json_encode(['here\'s' => 'something']))->shouldBeCalled();
 
         $promise = new FulfilledPromise($response->reveal());
 
